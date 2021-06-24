@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"path"
 	"strings"
@@ -50,21 +49,16 @@ func Vue(publicDir string) http.Handler {
 	handler := http.FileServer(http.Dir(publicDir))
 
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+
 		_path := req.URL.Path
-		fmt.Println("before check", _path)
 
 		// static files
-		// is >> _path == "/" << redundant ?
 		if strings.Contains(_path, ".") || _path == "/" {
-			fmt.Println("within", _path)
-
 			handler.ServeHTTP(w, req)
 			return
 		}
 
 		// rerouting to index.htm
-		fmt.Println("rewriting... ", _path)
-
 		http.ServeFile(w, req, path.Join(publicDir, "/index.html"))
 	})
 }
